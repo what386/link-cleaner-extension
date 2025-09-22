@@ -1,0 +1,21 @@
+{
+    "manifest_version": 2,
+    "name": "Link Cleaner",
+    "version": "1.0",
+    "description": "Clean tracking and junk from copied links.",
+    "icons": {
+        "48": "icons/icon48.png",
+        "198": "icons/icon198.png"
+    },
+    "background": {
+        "scripts": [
+            "cleaner.js",
+            "background.js"
+        ]
+    },
+    "permissions": [
+        "contextMenus",
+        "clipboardWrite",
+        "notifications"
+    ]
+}
