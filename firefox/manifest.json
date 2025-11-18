@@ -10,14 +10,13 @@
     "128": "icons/icon-128.png"
   },
   "background": {
-    "scripts": [
-      "cleaner.js",
-      "background.js"
-    ]
+    "scripts": ["cleaner.js", "background.js"]
   },
   "permissions": [
     "contextMenus",
     "clipboardWrite",
-    "notifications"
+    "notifications",
+    "tabs",
+    "activeTab"
   ]
 }

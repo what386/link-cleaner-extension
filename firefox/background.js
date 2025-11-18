@@ -21,3 +21,17 @@ browser.contextMenus.onClicked.addListener((info, tab) => {
     });
   }
 });
+
+// Handle extension button
+chrome.browserAction.onClicked.addListener(function(tab) {
+  chrome.tabs.query({active: true, currentWindow: true}, function(tabs) {
+    const currentTab = tabs[0];
+    const url = currentTab.url;
+
+    const cleaned = cleanLink(url);
+
+    chrome.tabs.update(currentTab.id, {
+      url: cleaned
+    });
+  });
+});
