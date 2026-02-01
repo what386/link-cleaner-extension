@@ -22,16 +22,9 @@ browser.contextMenus.onClicked.addListener((info, tab) => {
   }
 });
 
-// Handle extension button
-chrome.browserAction.onClicked.addListener(function(tab) {
-  chrome.tabs.query({active: true, currentWindow: true}, function(tabs) {
-    const currentTab = tabs[0];
-    const url = currentTab.url;
-
-    const cleaned = cleanLink(url);
-
-    chrome.tabs.update(currentTab.id, {
-      url: cleaned
-    });
+browser.browserAction.onClicked.addListener(function(tab) {
+  const cleaned = cleanLink(tab.url);
+  browser.tabs.update(tab.id, { url: cleaned }).catch(err => {
+    console.error("Failed to update tab:", err);
   });
 });

@@ -1,7 +1,8 @@
-function cleanLink(link, youtubeShortenEnabled = false, fixTwitterEnabled = false, walmartShortenEnabled = false, amazonTrackingId = null) {
+function cleanLink(link, youtubeShortenEnabled = false, fixTwitterEnabled = false, walmartShortenEnabled = false, amazonTrackingId = localStorage['amazon-tracking-id']) {
     try {
         var oldLink = new URL(link);
     } catch (e) {
+        // TypeError rasied if not identified as URL, try stripping "Page Title" or any other non-link text
         if (e instanceof TypeError) {
             var extractedURL = link.match(/https?:\/\/\S+/);
             if (extractedURL) {
@@ -40,7 +41,8 @@ function cleanLink(link, youtubeShortenEnabled = false, fixTwitterEnabled = fals
         newLink.searchParams.append('ID', oldLink.searchParams.get('ID'));
     }
     // YouTube links
-    if ((oldLink.host === 'www.youtube.com') && oldLink.searchParams.has('v')) {
+    // This matches known domains like https://youtube.com, https://m.youtube.com, and https://www.youtube.com
+    if (oldLink.host.endsWith('youtube.com') && oldLink.searchParams.has('v')) {
         // Shorten link if setting is enabled
         if (oldLink.searchParams.has('v') && youtubeShortenEnabled) {
             // Use to find the video ID: https://regex101.com/r/0Plpyd/1
@@ -55,7 +57,7 @@ function cleanLink(link, youtubeShortenEnabled = false, fixTwitterEnabled = fals
         if (oldLink.searchParams.has('t')) {
             newLink.searchParams.append('t', oldLink.searchParams.get('t'));
         }
-    } else if ((oldLink.host === 'www.youtube.com') && oldLink.pathname.includes('playlist') && oldLink.searchParams.has('list')) {
+    } else if (oldLink.host.endsWith('youtube.com') && oldLink.pathname.includes('playlist') && oldLink.searchParams.has('list')) {
         // Don't remove list ID for YouTube playlist links (#37)
         newLink.searchParams.append('list', oldLink.searchParams.get('list'));
     } else if ((oldLink.host === 'youtu.be') && oldLink.searchParams.has('t')) {
@@ -115,7 +117,6 @@ function cleanLink(link, youtubeShortenEnabled = false, fixTwitterEnabled = fals
         newLink.host = 'fxtwitter.com';
     }
     // Shorten Walmart links if enabled (#41)
-    console.log(walmartShortenEnabled)
     if (walmartShortenEnabled && (oldLink.host === 'www.walmart.com') && oldLink.pathname.includes('/ip/')) {
         var regex = /\/ip\/.*\/(\d+)/;
         var productID = oldLink.pathname.match(regex);
@@ -127,6 +128,8 @@ function cleanLink(link, youtubeShortenEnabled = false, fixTwitterEnabled = fals
     if (oldLink.host.includes('amazon') && amazonTrackingId) {
         newLink.searchParams.append('tag', amazonTrackingId);
     }
+    // Log link
+    addLog();
     // Switch to output
     console.log('New link:', newLink);
     return newLink.toString();
